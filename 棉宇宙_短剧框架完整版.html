@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>棉宇宙短剧框架方案全景图 - 15个方案完整版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --info: #0891b2;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 头部 */
+        .header {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(124, 58, 237, 0.2));
+            border-radius: 24px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(96, 165, 250, 0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 1.2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* 导航 */
+        .nav-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 15px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .nav-tab:hover {
+            background: rgba(255,255,255,0.1);
+            color: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        /* 卡片 */
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #f1f5f9;
+        }
+
+        .card-title .icon {
+            font-size: 2rem;
+        }
+
+        /* 表格 */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 16px 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.8);
+            font-weight: 600;
+            color: #94a3b8;
+            position: sticky;
+            top: 0;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
+        tr.matrix-row.selected {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .scheme-name {
+            font-weight: 600;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scheme-code {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .star {
+            color: #fbbf24;
+            letter-spacing: 2px;
+        }
+
+        .score-highlight {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .tag-p0 { background: linear-gradient(135deg, rgba(37, 99, 235, 0.3), rgba(124, 58, 237, 0.3)); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.3); }
+        .tag-p1 { background: linear-gradient(135deg, rgba(5, 150, 105, 0.3), rgba(16, 185, 129, 0.3)); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
+        .tag-p2 { background: linear-gradient(135deg, rgba(217, 119, 6, 0.3), rgba(245, 158, 11, 0.3)); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
+        .tag-risk { background: linear-gradient(135deg, rgba(220, 38, 38, 0.3), rgba(239, 68, 68, 0.3)); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.3); }
+
+        /* 方案卡片网格 */
+        .scheme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+        }
+
+        .scheme-card {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 20px;
+            padding: 28px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scheme-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .scheme-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(96, 165, 250, 0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .scheme-card:hover::before {
+            opacity: 1;
+        }
+
+        .scheme-card.p0 { border-color: rgba(37, 99, 235, 0.3); }
+        .scheme-card.p1 { border-color: rgba(5, 150, 105, 0.3); }
+        .scheme-card.p2 { border-color: rgba(217, 119, 6, 0.3); }
+        .scheme-card.risk { border-color: rgba(220, 38, 38, 0.3); }
+
+        .scheme-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .scheme-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .scheme-subtitle {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .scheme-brief {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .scheme-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .meta-item .value {
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        /* 四象限图 */
+        .quadrant-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1.2;
+            max-height: 500px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .quadrant {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quadrant:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .quadrant-tl { top: 0; left: 0; border-right: 1px dashed rgba(255,255,255,0.2); border-bottom: 1px dashed rgba(255,255,255,0.2); }
+        .quadrant-tr { top: 0; right: 0; border-left: 1px dashed rgba(255,255,255,0.2); border-bottom: 1px dashed rgba(255,255,255,0.2); }
+        .quadrant-bl { bottom: 0; left: 0; border-right: 1px dashed rgba(255,255,255,0.2); border-top: 1px dashed rgba(255,255,255,0.2); }
+        .quadrant-br { bottom: 0; right: 0; border-left: 1px dashed rgba(255,255,255,0.2); border-top: 1px dashed rgba(255,255,255,0.2); }
+
+        .quadrant-label {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+
+        .quadrant-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .quadrant-schemes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .quadrant-scheme {
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .quadrant-scheme:hover {
+            transform: scale(1.05);
+            background: rgba(255,255,255,0.2);
+        }
+
+        .quadrant-axis {
+            position: absolute;
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .axis-x { bottom: 10px; left: 50%; transform: translateX(-50%); }
+        .axis-y { left: 10px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+
+        /* 雷达图 */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            aspect-ratio: 1;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .legend-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .legend-item.active {
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        /* 决策树 */
+        .decision-tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .tree-level {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tree-node {
+            padding: 20px 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 180px;
+            border: 2px solid transparent;
+        }
+
+        .tree-node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .tree-node.root {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .tree-node.level1 {
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .tree-node.level2 {
+            background: rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+        }
+
+        .tree-connector {
+            width: 2px;
+            height: 30px;
+            background: rgba(255,255,255,0.3);
+            position: relative;
+        }
+
+        .tree-connector::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 10px solid rgba(255,255,255,0.3);
+        }
+
+        /* 甘特图 */
+        .gantt-chart {
+            overflow-x: auto;
+        }
+
+        .gantt-row {
+            display: grid;
+            grid-template-columns: 150px repeat(12, 1fr);
+            gap: 2px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .gantt-label {
+            font-weight: 500;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        .gantt-bar-container {
+            grid-column: span 12;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2px;
+            height: 40px;
+            position: relative;
+        }
+
+        .gantt-cell {
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .gantt-bar {
+            position: absolute;
+            height: 30px;
+            top: 5px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .gantt-bar:hover {
+            transform: scaleY(1.1);
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .gantt-header {
+            display: grid;
+            grid-template-columns: 150px repeat(12, 1fr);
+            gap: 2px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .gantt-header span {
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* 详情模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.1);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            color: #f1f5f9;
+        }
+
+        .modal-close {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .detail-section {
+            margin-bottom: 30px;
+        }
+
+        .detail-section h3 {
+            font-size: 1.2rem;
+            color: #60a5fa;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-section p {
+            color: #cbd5e1;
+            line-height: 1.8;
+        }
+
+        .detail-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .detail-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: #cbd5e1;
+        }
+
+        .detail-list li::before {
+            content: '▸';
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .score-bars {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .score-item {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 20px;
+            border-radius: 16px;
+        }
+
+        .score-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #94a3b8;
+        }
+
+        .score-value {
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .score-bar {
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        /* 筛选器 */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn {
+            padding: 8px 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(96, 165, 250, 0.2);
+            border-color: rgba(96, 165, 250, 0.3);
+            color: #60a5fa;
+        }
+
+        /* 对比模式 */
+        .compare-panel {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 20px;
+            min-width: 320px;
+            max-width: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+            z-index: 999;
+            display: none;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .compare-panel.open {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .compare-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .compare-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .compare-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .compare-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .compare-btn-clear {
+            background: rgba(220, 38, 38, 0.2);
+            color: #f87171;
+        }
+
+        .compare-btn-clear:hover {
+            background: rgba(220, 38, 38, 0.4);
+        }
+
+        .compare-btn-close {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .compare-btn-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .compare-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .compare-item-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .compare-item-code {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .compare-item-name {
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        .compare-item-remove {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .compare-item-remove:hover {
+            background: rgba(220, 38, 38, 0.3);
+            color: #f87171;
+        }
+
+        .compare-summary {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(37, 99, 235, 0.3);
+        }
+
+        .compare-summary-title {
+            color: #60a5fa;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .compare-summary-text {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .compare-fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            padding: 16px 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(37, 99, 235, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 100;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: #fff;
+        }
+
+        .compare-fab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(37, 99, 235, 0.5);
+        }
+
+        .compare-fab .count {
+            background: #fff;
+            color: #2563eb;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .compare-fab.hidden {
+            display: none;
+        }
+
+        .select-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .scheme-card.selected {
+            border-color: #2563eb;
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .scheme-card.selected .select-indicator {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .header-stats { flex-direction: column; gap: 20px; }
+            .scheme-grid { grid-template-columns: 1fr; }
+            .score-bars { grid-template-columns: 1fr; }
+            .nav-tabs { position: relative; top: 0; }
+            .compare-panel {
+                left: 20px;
+                right: 20px;
+                bottom: 20px;
+                max-width: none;
+            }
+            .compare-fab {
+                bottom: 20px;
+                right: 20px;
+            }
+            .quadrant-container { aspect-ratio: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>🎬 棉宇宙短剧框架方案全景图</h1>
+            <p>基于《棉花帝国》历史背景的15个完整叙事框架 | 2026春季汇报</p>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">完整方案</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">首推方案</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">评估维度</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 导航 -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="overview">📊 总览矩阵</div>
+            <div class="nav-tab" data-tab="quadrant">📈 四象限</div>
+            <div class="nav-tab" data-tab="radar">🎯 雷达图</div>
+            <div class="nav-tab" data-tab="decision">🌲 决策树</div>
+            <div class="nav-tab" data-tab="gantt">📅 甘特图</div>
+            <div class="nav-tab" data-tab="all">📚 方案卡片</div>
+            <div class="nav-tab" data-tab="recommended">⭐ 首推</div>
+        </div>
+
+        <!-- 总览矩阵 -->
+        <div class="card" id="overview">
+            <div class="card-title">
+                <span class="icon">📊</span>
+                <span>15个方案综合评估矩阵</span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>方案</th>
+                            <th>用户友好</th>
+                            <th>棉花承载</th>
+                            <th>时代真实</th>
+                            <th>短剧适配</th>
+                            <th>综合评分</th>
+                            <th>推荐等级</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrixTable">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 四象限矩阵 -->
+        <div class="card" id="quadrant">
+            <div class="card-title">
+                <span class="icon">📈</span>
+                <span>方案定位四象限矩阵</span>
+            </div>
+            <div class="quadrant-container">
+                <div class="quadrant quadrant-tl" onclick="showQuadrant('tl')">
+                    <div class="quadrant-label">高棉花承载 · 低用户友好</div>
+                    <div class="quadrant-title">🎭 深度储备区</div>
+                    <div class="quadrant-schemes">
+                        <span class="quadrant-scheme">I 反派视角</span>
+                        <span class="quadrant-scheme">K 数字人文</span>
+                    </div>
+                </div>
+                <div class="quadrant quadrant-tr" onclick="showQuadrant('tr')">
+                    <div class="quadrant-label">高棉花承载 · 高用户友好</div>
+                    <div class="quadrant-title">⭐ 首推区域</div>
+                    <div class="quadrant-schemes">
+                        <span class="quadrant-scheme" style="background:#2563eb">H 物件叙事</span>
+                        <span class="quadrant-scheme" style="background:#2563eb">F 卷宗事件链</span>
+                        <span class="quadrant-scheme" style="background:#059669">B 双主线</span>
+                    </div>
+                </div>
+                <div class="quadrant quadrant-bl" onclick="showQuadrant('bl')">
+                    <div class="quadrant-label">低棉花承载 · 低用户友好</div>
+                    <div class="quadrant-title">⚠️ 风险区域</div>
+                    <div class="quadrant-schemes">
+                        <span class="quadrant-scheme">C 群像编年史</span>
+                        <span class="quadrant-scheme">D 云图式</span>
+                    </div>
+                </div>
+                <div class="quadrant quadrant-br" onclick="showQuadrant('br')">
+                    <div class="quadrant-label">低棉花承载 · 高用户友好</div>
+                    <div class="quadrant-title">💝 情感优先区</div>
+                    <div class="quadrant-schemes">
+                        <span class="quadrant-scheme" style="background:#d97706">J 女性群像</span>
+                        <span class="quadrant-scheme">A 单主角</span>
+                    </div>
+                </div>
+                <div class="quadrant-axis axis-x">→ 用户友好度 →</div>
+                <div class="quadrant-axis axis-y">↑ 棉花承载力 ↑</div>
+            </div>
+        </div>
+
+        <!-- 雷达图 -->
+        <div class="card" id="radar">
+            <div class="card-title">
+                <span class="icon">🎯</span>
+                <span>核心方案雷达图对比</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="radarChart" width="500" height="500"></canvas>
+            </div>
+            <div class="legend" id="radarLegend">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 决策树 -->
+        <div class="card" id="decision">
+            <div class="card-title">
+                <span class="icon">🌲</span>
+                <span>决策路径树</span>
+            </div>
+            <div class="decision-tree">
+                <div class="tree-level">
+                    <div class="tree-node root">
+                        核心目标是什么？
+                    </div>
+                </div>
+                <div class="tree-connector"></div>
+                <div class="tree-level">
+                    <div class="tree-node level1">
+                        <div style="font-size:1.2rem;margin-bottom:5px;">🎬</div>
+                        讲好棉花故事<br>
+                        <small style="color:#9ca3af">(Jack要求)</small>
+                    </div>
+                    <div class="tree-node level1">
+                        <div style="font-size:1.2rem;margin-bottom:5px;">⚖️</div>
+                        平衡棉花+人物<br>
+                        <small style="color:#9ca3af">(折中方案)</small>
+                    </div>
+                    <div class="tree-node level1">
+                        <div style="font-size:1.2rem;margin-bottom:5px;">❤️</div>
+                        人物情感优先<br>
+                        <small style="color:#9ca3af">(用户导向)</small>
+                    </div>
+                </div>
+                <div class="tree-connector"></div>
+                <div class="tree-level">
+                    <div class="tree-node level2" onclick="openModal('H')">H 物件叙事</div>
+                    <div class="tree-node level2" onclick="openModal('F')">F 卷宗事件链</div>
+                    <div class="tree-node level2" onclick="openModal('B')">B 双主线对照</div>
+                    <div class="tree-node level2" onclick="openModal('J')">J 女性群像</div>
+                    <div class="tree-node level2" onclick="openModal('A')">A 单主角</div>
+                </div>
+                <div class="tree-connector"></div>
+                <div class="tree-level">
+                    <div class="tree-node level2" style="background:rgba(37,99,235,0.3);border:1px solid #2563eb;">
+                        最贴题 ✓
+                    </div>
+                    <div class="tree-node level2" style="background:rgba(37,99,235,0.3);border:1px solid #2563eb;">
+                        最平衡 △
+                    </div>
+                    <div class="tree-node level2" style="background:rgba(217,119,6,0.3);border:1px solid #d97706;">
+                        最情感化 ⚠
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 甘特图 -->
+        <div class="card" id="gantt">
+            <div class="card-title">
+                <span class="icon">📅</span>
+                <span>推荐实施路径</span>
+            </div>
+            <div class="gantt-chart">
+                <div class="gantt-header">
+                    <span>方案</span>
+                    <span>W1</span><span>W2</span><span>W3</span><span>W4</span><span>W5</span><span>W6</span>
+                    <span>W7</span><span>W8</span><span>W9</span><span>W10</span><span>W11</span><span>W12</span>
+                </div>
+                <div class="gantt-row">
+                    <div class="gantt-label">H 物件叙事</div>
+                    <div class="gantt-bar-container">
+                        <div class="gantt-bar" style="left:4.2%;width:12.5%;background:linear-gradient(90deg,#2563eb,#60a5fa);">细纲</div>
+                        <div class="gantt-bar" style="left:16.7%;width:16.6%;background:linear-gradient(90deg,#7c3aed,#a78bfa);">剧本</div>
+                        <div class="gantt-bar" style="left:33.3%;width:29.2%;background:linear-gradient(90deg,#059669,#34d399);">制作</div>
+                        <div class="gantt-bar" style="left:62.5%;width:20.8%;background:linear-gradient(90deg,#d97706,#fbbf24);">测试上线</div>
+                    </div>
+                </div>
+                <div class="gantt-row">
+                    <div class="gantt-label">F 卷宗事件链</div>
+                    <div class="gantt-bar-container">
+                        <div class="gantt-bar" style="left:4.2%;width:12.5%;background:linear-gradient(90deg,#2563eb,#60a5fa);">细纲</div>
+                        <div class="gantt-bar" style="left:16.7%;width:16.6%;background:linear-gradient(90deg,#7c3aed,#a78bfa);">剧本</div>
+                        <div class="gantt-bar" style="left:33.3%;width:29.2%;background:linear-gradient(90deg,#059669,#34d399);">制作</div>
+                        <div class="gantt-bar" style="left:62.5%;width:20.8%;background:linear-gradient(90deg,#d97706,#fbbf24);">测试上线</div>
+                    </div>
+                </div>
+                <div class="gantt-row">
+                    <div class="gantt-label">B 双主线对照</div>
+                    <div class="gantt-bar-container">
+                        <div class="gantt-bar" style="left:16.7%;width:12.5%;background:rgba(255,255,255,0.2);">储备</div>
+                        <div class="gantt-bar" style="left:29.2%;width:16.6%;background:rgba(255,255,255,0.2);">剧本</div>
+                        <div class="gantt-bar" style="left:45.8%;width:33.3%;background:rgba(255,255,255,0.2);">制作</div>
+                    </div>
+                </div>
+                <div class="gantt-row">
+                    <div class="gantt-label">I/J 储备方案</div>
+                    <div class="gantt-bar-container">
+                        <div class="gantt-bar" style="left:25%;width:12.5%;background:rgba(255,255,255,0.15);">储备</div>
+                        <div class="gantt-bar" style="left:37.5%;width:16.6%;background:rgba(255,255,255,0.15);">剧本</div>
+                        <div class="gantt-bar" style="left:54.2%;width:29.2%;background:rgba(255,255,255,0.15);">制作</div>
+                    </div>
+                </div>
+            </div>
+            <p style="color:#9ca3af;margin-top:20px;text-align:center;font-size:0.9rem;">
+                💡 H+F 并行开发，B/I/J 储备迭代
+            </p>
+        </div>
+
+        <!-- 全部方案卡片 -->
+        <div class="card" id="all" style="display:none;">
+            <div class="card-title">
+                <span class="icon">📚</span>
+                <span>全部15个方案详解</span>
+            </div>
+            <div class="filter-bar">
+                <span class="filter-label">筛选：</span>
+                <button class="filter-btn active" onclick="filterSchemes('all')">全部</button>
+                <button class="filter-btn" onclick="filterSchemes('p0')">P0首选</button>
+                <button class="filter-btn" onclick="filterSchemes('p1')">P1重点</button>
+                <button class="filter-btn" onclick="filterSchemes('p2')">P2储备</button>
+                <button class="filter-btn" onclick="filterSchemes('risk')">风险/实验</button>
+            </div>
+            <div class="scheme-grid" id="schemeGrid">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 首推方案 -->
+        <div class="card" id="recommended" style="display:none;">
+            <div class="card-title">
+                <span class="icon">⭐</span>
+                <span>核心推荐方案</span>
+            </div>
+            <div id="recommendedContent">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 详情模态框 -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title" id="modalTitle">方案详情</div>
+                </div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- 动态内容 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 对比面板 -->
+    <div class="compare-panel" id="comparePanel">
+        <div class="compare-header">
+            <span class="compare-title">📋 对比列表</span>
+            <div class="compare-actions">
+                <button class="compare-btn compare-btn-clear" onclick="clearCompare()">清空</button>
+                <button class="compare-btn compare-btn-close" onclick="toggleComparePanel()">×</button>
+            </div>
+        </div>
+        <div id="compareItems"></div>
+        <div class="compare-summary" id="compareSummary" style="display:none;"></div>
+    </div>
+
+    <!-- 对比悬浮按钮 -->
+    <button class="compare-fab hidden" id="compareFab" onclick="toggleComparePanel()">
+        <span>📊 对比</span>
+        <div class="count" id="compareCount">0</div>
+    </button>
+
+    <script>
+        // 完整方案数据（15个方案）
+        const allSchemes = [
+            {
+                code: 'A',
+                name: '单主角成长串联',
+                subtitle: '角色带观众走历史',
+                priority: 'risk',
+                scores: { user: 90, cotton: 70, reality: 60, fit: 85 },
+                scene: '强IP运营',
+                brief: '以稳小棉的成长为主线，通过她的视角串联300年棉花历史。主角从天真少女成长为觉醒者，见证棉花帝国的兴衰。',
+                core: '主角带观众走历史',
+                setup: '棉花不再是背景，而是"真正的主角"。可以是棉衣、棉布、运棉船、账册、贡物、军需物资等关键载体',
+                narrative: '以一个物件的流转为主线，每到一个环节，带出一段人物故事、一层制度关系和一组国家博弈，最终拼出棉花如何塑造世界的完整图景',
+                pros: ['用户友好度最高，情感投入最深', '有明确的成长弧线，易于观众代入', 'IP运营空间大，可延展性强', '每集有主角钩子，追剧动力强'],
+                cons: ['主角容易"抢戏"，棉花变配角', '与Jack"不讲IP"要求直接冲突', '穿越感可能削弱时代真实感', '需要维护人设一致性，创作受限'],
+                examples: ['EP01《种子》—— 稳小棉的诞生，印度棉田的起源', 'EP02《旅程》—— 跨大西洋贸易，见证奴隶制', 'EP03《工厂》—— 工业革命，童工与女工', 'EP04《战争》—— 南北战争，棉花禁运', 'EP05《觉醒》—— 现代反思，可持续时尚']
+            },
+            {
+                code: 'B',
+                name: '双主线对照式',
+                subtitle: '国家线+人物线并行',
+                priority: 'p1',
+                scores: { user: 95, cotton: 100, reality: 95, fit: 90 },
+                scene: '电影/长剧',
+                brief: '上层线负责讲清楚时代和国家逻辑，下层线负责建立情绪和追更动力。两条线在若干关键节点交汇，共同推动叙事。',
+                core: '国家博弈+个人命运双线并行',
+                setup: '棉花既是国家资源，也是个体命运的转折点。通过上下两条线的互相照亮，兼顾格局与人物',
+                narrative: '上层线负责讲清楚时代和国家逻辑，下层线负责建立情绪和追更动力。两条线在若干关键节点交汇，共同推动叙事',
+                pros: ['最平衡的方案，兼顾格局与情感', '人物情感线增强用户粘性', '国家博弈线提升深度和格局', '综合评分最高（25/25）'],
+                cons: ['两条线平衡难度极高', '编剧要求苛刻，执行风险大', '制作成本相对较高', '建议有成功经验后再尝试'],
+                examples: ['国家线：英国棉花禁令 → 美国棉花王国崛起 → 南北战争 → 全球化', '人物线：种植园主家族三代人的命运变迁', '交汇点：战争爆发时的家族抉择']
+            },
+            {
+                code: 'C',
+                name: '群像编年史',
+                subtitle: '多人物拼时代',
+                priority: 'risk',
+                scores: { user: 60, cotton: 100, reality: 95, fit: 60 },
+                scene: '正剧/纪录片',
+                brief: '围绕若干与棉花有关的关键人物展开，每个人物都是时代切片。没有固定主角，通过群像展现棉花帝国的全景。',
+                core: '多人物拼贴时代图景',
+                setup: '围绕棉花产业链上的不同角色：种植园主、奴隶、工厂主、工人、商人、改革者等',
+                narrative: '每集聚焦一个历史人物或群体，通过他们的故事折射棉花帝国的某个侧面',
+                pros: ['最有厚度，全景式展现', '不受单一角色限制', '历史真实感极强', '适合深度内容爱好者'],
+                cons: ['用户友好度低，难追', '更像作品型而非产品型', '短剧节奏下人物难立住', '缺乏情感连续性'],
+                examples: ['EP01《种植园主》—— 密西西比的棉花大亨', 'EP02《女奴萨拉》—— 每天采300磅棉花的母亲', 'EP03《工厂主》—— 曼彻斯特的工业巨头', 'EP04《童工玛丽》—— 12岁的纺织女工', 'EP05《改革者》—— 废奴运动中的棉花抵制']
+            },
+            {
+                code: 'D',
+                name: '云图式多时空互文',
+                subtitle: '多时代回响',
+                priority: 'risk',
+                scores: { user: 55, cotton: 85, reality: 70, fit: 55 },
+                scene: '文艺片',
+                brief: '六个时代的故事通过主题和意象相互呼应，形成轮回结构。棉花作为跨越时空的见证者。',
+                core: '主题轮回，多时代互文',
+                setup: '六个独立故事，通过棉花这一共同意象串联，形成主题上的回响',
+                narrative: '非线性叙事，观众需要主动拼图，发现不同时代之间的关联',
+                pros: ['最有格局，艺术性最强', '主题深度极高', '适合电影节/艺术平台', '差异化明显'],
+                cons: ['用户认知成本极高', '短剧平台算法不友好', '与"真实"要求有冲突', '制作难度大，周期长'],
+                examples: ['1790s 美国南方：轧棉机发明', '1860s 南北战争：棉花外交', '1890s 印度：英国棉纺织冲击', '1930s 大萧条：棉花危机', '1960s 民权运动：棉花抵制', '2020s 快时尚：可持续反思']
+            },
+            {
+                code: 'E',
+                name: '单时代深描式',
+                subtitle: '抓一个节点深挖',
+                priority: 'p2',
+                scores: { user: 80, cotton: 75, reality: 100, fit: 95 },
+                scene: '特别篇',
+                brief: '选择一个关键历史节点（如南北战争），用一季深度挖掘。极致的真实感和细节呈现。',
+                core: '单点深挖，极致真实',
+                setup: '聚焦一个特定时代，如1860-1865年的美国南北战争时期',
+                narrative: '通过详实的历史细节，还原棉花在那个时代的核心作用',
+                pros: ['时代真实感最高', '制作相对可控', '历史考据可以做得极深', '适合特别篇/电影化'],
+                cons: ['格局受限，难以体现"帝国"概念', '观众可能觉得"不过瘾"', '续作需要换时代，连续性弱', '棉花故事的广度受限'],
+                examples: ['主题：1861-1865 棉花与南北战争', '主线：棉花禁运如何影响战争走向', '支线：英国纺织工人对南方棉花的依赖', '结局：棉花王国的崩塌与重建']
+            },
+            {
+                code: 'F',
+                name: '卷宗事件链式',
+                subtitle: '事件揭真相',
+                priority: 'p0',
+                scores: { user: 80, cotton: 95, reality: 95, fit: 95 },
+                scene: '悬疑类型',
+                brief: '每集一个"棉花案件"：一批棉衣为何失踪？一艘运棉船为何改道？通过调查揭开棉花在国家、市场与权力中的作用。',
+                core: '用事件和悬疑机制为严肃题材建立更友好的入口',
+                setup: '棉花通过军需、棉税、走私、掉包、失踪、贪腐等事件进入叙事',
+                narrative: '每一阶段围绕一个关键事件展开：一批棉衣为何失踪、一艘运棉船为何改道、一份棉税账册为何被篡改。通过调查与追踪推动主线',
+                pros: ['最容易打开用户入口', '悬疑/探案结构适合短剧节奏', '能将严肃题材转化为更易被接受的观看形式', '有较强创新潜力'],
+                cons: ['若过于偏重"案情"，可能削弱人物成长与情感沉淀', '若线索设计不足，会显得套路化', '需要找到有戏剧张力的真实历史案件'],
+                examples: ['EP01《失踪的棉衣》—— 军需物资背后的贪腐链', 'EP02《改道的货船》—— 走私棉花与战争融资', 'EP03《篡改的账册》—— 棉税与地方权力斗争', 'EP04《沉默的证人》—— 棉花交易所的内幕', 'EP05《最后的种子》—— 棉花专利与农业垄断']
+            },
+            {
+                code: 'G',
+                name: '棉花链条旅行式',
+                subtitle: '让棉花沿链条流动',
+                priority: 'p2',
+                scores: { user: 60, cotton: 100, reality: 95, fit: 60 },
+                scene: '教育内容',
+                brief: '跟随一朵棉花，从种子到成衣的完整旅程。展现棉花产业链的每个环节及其背后的权力关系。',
+                core: '棉花是绝对主角，跟随其物理旅程',
+                setup: '从棉田 → 轧棉厂 → 纺织厂 → 染整厂 → 成衣厂 → 零售 → 消费者',
+                narrative: '以棉花的"第一人称"视角，见证每个环节的故事',
+                pros: ['棉花承载力最高，最贴题', '产业链展示完整清晰', '教育意义强', '适合纪录片风格'],
+                cons: ['缺少固定角色，情感锚点弱', '用户友好度低', '容易变成"产业链科普"', '短剧节奏下难以保持吸引力'],
+                examples: ['第一章《种子》—— 印度棉田的清晨', '第二章《轧棉》—— 惠特尼机器的革命', '第三章《纺纱》—— 曼彻斯特的工厂', '第四章《织布》—— 工人的双手', '第五章《成衣》—— 快时尚的诞生']
+            },
+            {
+                code: 'H',
+                name: '物件叙事',
+                subtitle: '物件带你看历史',
+                priority: 'p0',
+                scores: { user: 80, cotton: 95, reality: 90, fit: 85 },
+                scene: '首推',
+                brief: '以棉花或棉花制成的关键物件为叙事中心，通过其在不同阶层、地区、权力体系中的流转，展开人物命运与时代博弈。',
+                core: '棉花不再只是背景，而是"真正的主角"',
+                setup: '可以是棉衣、棉布、运棉船、账册、贡物、军需物资等关键载体',
+                narrative: '以一个物件的流转为主线，每到一个环节，带出一段人物故事、一层制度关系和一组国家博弈，最终拼出棉花如何塑造世界的完整图景',
+                pros: ['最贴"讲棉花故事"的核心要求', '格局自然大', '有鲜明的新鲜感', '较少依赖传统主角逻辑，能够真正让棉花成为叙事核心'],
+                cons: ['如果缺乏稳定的人物锚点，容易降低情感投入', '若各段之间连接不强，可能显得像历史散文式拼接'],
+                examples: ['EP01《血衣》—— 南北战争前夜，一件奴隶的粗布衣', 'EP02《家书》—— 一战战壕里，母亲寄来的棉质信笺', 'EP03《工装》—— 工业革命，童工的工作服', 'EP04《礼服》—— 棉花交易所，商人的燕尾服', 'EP05《牛仔裤》—— 从工装到时尚的百年旅程']
+            },
+            {
+                code: 'I',
+                name: '反派视角',
+                subtitle: '权力内部的人',
+                priority: 'p0',
+                scores: { user: 75, cotton: 90, reality: 90, fit: 80 },
+                scene: '戏剧张力',
+                brief: '从掌握棉花资源、税收、军需、地方权力代理权的人出发，让观众进入棉花体系的内部视角。',
+                core: '主视角可以是军需官、棉商、税吏、运输总管、地方权力代理人等',
+                setup: '通过他们的升迁、抉择与堕落，展现棉花如何成为权力工具',
+                narrative: '以"秩序内部的人"作为观察者和行动者，观众通过其视角看到棉花如何被变成财政、战争、控制与掠夺的一部分',
+                pros: ['戏剧张力强', '天然适合讲国家层面的博弈', '人物复杂度高，更容易展现制度如何运作'],
+                cons: ['代入门槛相对较高', '人物若过冷，可能影响情感黏性', '需要把握"复杂"与"疏离"之间的边界'],
+                examples: ['EP01《军需官》—— 南北战争中的棉花采购官', 'EP02《税吏》—— 英国殖民印度的棉税征收', 'EP03《运输总管》—— 跨大西洋棉花贸易的船队老板', 'EP04《交易所经纪人》—— 利物浦棉花交易所的内幕', 'EP05《地方代理》—— 美国南方的棉花种植园管理者']
+            },
+            {
+                code: 'J',
+                name: '女性群像',
+                subtitle: '棉花背后的她们',
+                priority: 'p0',
+                scores: { user: 90, cotton: 75, reality: 90, fit: 80 },
+                scene: '内容趋势',
+                brief: '通过多个女性角色在棉花链条中的不同位置，展现棉花如何进入劳动、家庭、身体、战争与社会结构。',
+                core: '以多个女性角色为中心，从不同层级和位置切入棉花故事',
+                setup: '棉农、织女、女工、商贾之家女性、军衣缝制者、地方家庭中的女性，共同构成一组围绕棉花展开的女性命运共同体',
+                narrative: '以多个女性角色为中心，从不同层级和位置切入棉花故事，形成交织叙事',
+                pros: ['情感温度高，更容易形成群像口碑', '有利于将严肃题材做得更有生活感和人物触感', '符合当前女性内容趋势'],
+                cons: ['若群像过散，会削弱主线', '若处理不当，可能变成"女性题材先行"，弱化棉花本身的主题中心'],
+                examples: ['EP01《采棉女》—— 密西西比种植园的女奴', 'EP02《纺织女工》—— 曼彻斯特工厂的组织者', 'EP03《商人之妻》—— 用棉花财富资助废奴运动', 'EP04《军衣缝制者》—— 南北战争中的后方女性', 'EP05《现代设计师》—— 可持续时尚的女创业者']
+            },
+            {
+                code: 'K',
+                name: '数字人文',
+                subtitle: '数据可视化叙事',
+                priority: 'p2',
+                scores: { user: 55, cotton: 95, reality: 95, fit: 55 },
+                scene: '知识平台',
+                brief: '用现代数据视角重构历史。每集以一个"数字"切入：300万磅、50%、1/3...通过数据背后的故事，展现棉花的全球影响力。',
+                core: '用数据作为叙事入口',
+                setup: '每集聚焦一个关键数字，如棉花产量、贸易额、奴隶数量等',
+                narrative: '数据 → 历史背景 → 人物故事 → 数据意义解读',
+                pros: ['独特的知识型内容', '适合B站/知识平台', '数据本身就是故事', '差异化明显'],
+                cons: ['用户友好度低', '数据需要包装，认知门槛高', '容易变成"历史课"', '娱乐性不足'],
+                examples: ['EP01《300万磅》—— 1790年美国棉花产量的爆炸增长', 'EP02《50%》—— 英国出口贸易中棉纺织品占比', 'EP03《1/3》—— 美国南方奴隶人口中从事棉花种植的比例', 'EP04《80%》—— 利物浦棉花交易所的全球份额', 'EP05《0》—— 棉花种植园的利润与奴隶的报酬']
+            },
+            {
+                code: 'L',
+                name: '对话体',
+                subtitle: '跨时空辩论',
+                priority: 'p2',
+                scores: { user: 75, cotton: 75, reality: 80, fit: 70 },
+                scene: '低成本试水',
+                brief: '两个不同时代的人物"隔空对话"。种植园主 vs 废奴主义者、工厂主 vs 工会领袖...通过辩论展现观念的冲突与演变。',
+                core: '跨时空对话，观念碰撞',
+                setup: '每集选择两个对立立场的历史人物进行虚拟对话',
+                narrative: '对话形式，场景简单，成本低',
+                pros: ['对话形式易理解', '有冲突感，节奏快', '场景简单，制作成本低', '适合快速验证'],
+                cons: ['容易变成"辩论赛"', '缺乏剧情张力', '视觉表现力弱', '棉花故事承载力有限'],
+                examples: ['EP01《自由的价格》—— 1860年种植园主 vs 1960年民权运动家', 'EP02《进步的代价》—— 1840年工厂主 vs 1920年劳工改革者', 'EP03《全球化的悖论》—— 1800年利物浦商人 vs 2000年环保主义者']
+            },
+            {
+                code: 'M',
+                name: '沉浸式体验',
+                subtitle: '你是棉花',
+                priority: 'p2',
+                scores: { user: 80, cotton: 95, reality: 80, fit: 80 },
+                scene: '实验内容',
+                brief: '第二人称叙事，观众代入棉花视角。"你是一颗种子，被播撒在密西西比的红土上..." "你是一件衬衫，穿在利物浦工人的身上..."',
+                core: '第二人称，极致代入',
+                setup: '观众=棉花，经历从种子到成衣的完整旅程',
+                narrative: '第二人称旁白+画面呈现，成本低但创意要求高',
+                pros: ['第二人称新鲜，有代入感', '棉花是绝对主角', '形式创新，差异化强', '制作成本可控'],
+                cons: ['第二人称长时间观看易疲劳', '情感深度受限', '需要极强的文案能力', '实验性强，市场验证少'],
+                examples: ['EP01《你的旅程》—— 从印度棉田到英国纺织厂', 'EP02《你的价格》—— 在利物浦棉花交易所被拍卖', 'EP03《你的命运》—— 成为军服，见证战争与和平', 'EP04《你的蜕变》—— 从粗布到牛仔布的工艺革命', 'EP05《你的未来》—— 快时尚与可持续的抉择']
+            },
+            {
+                code: 'N',
+                name: '神话重构',
+                subtitle: '棉花的创世神话',
+                priority: 'p2',
+                scores: { user: 90, cotton: 70, reality: 50, fit: 85 },
+                scene: '动画特效',
+                brief: '用神话/寓言方式讲述棉花历史。创造"棉神"体系，将历史事件转化为神话故事。',
+                core: '神话化叙事，视觉奇观',
+                setup: '创造棉花相关的神话体系，如白棉之神、黑土之咒等',
+                narrative: '神话故事形式，视觉表现空间大',
+                pros: ['神话形式天然吸引人', '视觉表现力强', '适合动画/特效', '用户友好度高'],
+                cons: ['与"贴合时代背景"要求冲突', '神话化处理削弱真实感', 'Jack可能不接受', '棉花故事承载力被稀释'],
+                examples: ['EP01《白棉之神》—— 棉花如何从印度走向世界', 'EP02《黑土之咒》—— 棉花与奴隶制的诅咒', 'EP03《铁马之舞》—— 工业革命中棉花的变形', 'EP04《银线之谜》—— 棉花与金融资本的纠缠', 'EP05《绿棉之梦》—— 可持续未来的预言']
+            },
+            {
+                code: 'O',
+                name: '新闻体',
+                subtitle: '棉花帝国头条',
+                priority: 'p1',
+                scores: { user: 80, cotton: 75, reality: 95, fit: 95 },
+                scene: '快速验证',
+                brief: '用新闻报道形式呈现历史。每集是一期"历史上的今天"新闻节目：主播+现场连线+历史影像（动画还原）。',
+                core: '新闻节目形式，熟悉易接受',
+                setup: '模拟历史新闻节目，报道棉花相关的重大事件',
+                narrative: '主播开场 → 现场连线（历史场景）→ 专家解读 → 观众来电',
+                pros: ['新闻形式熟悉，易接受', '结构清晰，易量产', '真实感强', '制作流程成熟'],
+                cons: ['容易变成"历史纪录片"', '缺乏剧情吸引力', '人物塑造空间小', '创新性不足'],
+                examples: ['EP01《1793年头条》—— 惠特尼发明轧棉机', 'EP02《1861年头条》—— 南北战争爆发，棉花禁运', 'EP03《1929年头条》—— 大萧条中的棉花危机', 'EP04《1960年头条》—— 民权运动中的棉花抵制', 'EP05《2020年头条》—— 快时尚与可持续争论']
+            }
+        ];
+
+        // 雷达图数据
+        const radarSchemes = {
+            H: { color: '#2563eb', name: 'H 物件叙事' },
+            F: { color: '#7c3aed', name: 'F 卷宗事件链' },
+            B: { color: '#059669', name: 'B 双主线对照' },
+            I: { color: '#d97706', name: 'I 反派视角' },
+            J: { color: '#dc2626', name: 'J 女性群像' }
+        };
+
+        let selectedSchemes = [];
+        let activeRadarSchemes = ['H', 'F'];
+        let canvas, ctx;
+
+        // 生成评分星星
+        function getStars(score) {
+            const full = Math.floor(score / 20);
+            const half = (score % 20) >= 10 ? 1 : 0;
+            return '★'.repeat(full) + (half ? '☆' : '');
+        }
+
+        // 生成优先级标签
+        function getPriorityTag(priority) {
+            const tags = {
+                'p0': '<span class="tag tag-p0">P0首选</span>',
+                'p1': '<span class="tag tag-p1">P1重点</span>',
+                'p2': '<span class="tag tag-p2">P2储备</span>',
+                'risk': '<span class="tag tag-risk">风险/实验</span>'
+            };
+            return tags[priority] || '';
+        }
+
+        // 生成优先级颜色
+        function getPriorityColor(priority) {
+            const colors = {
+                'p0': '#2563eb',
+                'p1': '#059669',
+                'p2': '#d97706',
+                'risk': '#dc2626'
+            };
+            return colors[priority] || '#64748b';
+        }
+
+        // 渲染矩阵表格
+        function renderMatrix() {
+            const tbody = document.getElementById('matrixTable');
+            tbody.innerHTML = allSchemes.map(s => `
+                <tr class="matrix-row ${selectedSchemes.includes(s.code) ? 'selected' : ''}" onclick="openModal('${s.code}')" ondblclick="toggleSelectFromTable('${s.code}')" title="双击加入对比" style="cursor:pointer;">
+                    <td class="scheme-name">
+                        <span class="scheme-code" style="background:${getPriorityColor(s.priority)}20;color:${getPriorityColor(s.priority)}">${s.code}</span>
+                        ${s.name}
+                        ${selectedSchemes.includes(s.code) ? '<span style="color:#60a5fa;margin-left:8px;">✓</span>' : ''}
+                    </td>
+                    <td><span class="star">${getStars(s.scores.user)}</span></td>
+                    <td><span class="star">${getStars(s.scores.cotton)}</span></td>
+                    <td><span class="star">${getStars(s.scores.reality)}</span></td>
+                    <td><span class="star">${getStars(s.scores.fit)}</span></td>
+                    <td class="score-highlight" style="color:${getPriorityColor(s.priority)}">${Object.values(s.scores).reduce((a,b)=>a+b,0)/4|0}/25</td>
+                    <td onclick="event.stopPropagation()">
+                        ${getPriorityTag(s.priority)}
+                        <button onclick="toggleSelect('${s.code}', event)" class="compare-btn" style="margin-left:10px;padding:4px 10px;font-size:0.75rem;background:rgba(255,255,255,0.1);color:#94a3b8;border:1px solid rgba(255,255,255,0.2);border-radius:12px;cursor:pointer;">
+                            ${selectedSchemes.includes(s.code) ? '✓' : '+'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 渲染雷达图
+        function initRadarChart() {
+            canvas = document.getElementById('radarChart');
+            ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = 500 * dpr;
+            canvas.height = 500 * dpr;
+            canvas.style.width = '500px';
+            canvas.style.height = '500px';
+            ctx.scale(dpr, dpr);
+
+            // 渲染图例
+            const legend = document.getElementById('radarLegend');
+            legend.innerHTML = Object.entries(radarSchemes).map(([code, data]) => `
+                <div class="legend-item ${activeRadarSchemes.includes(code) ? 'active' : ''}" onclick="toggleRadarScheme('${code}')">
+                    <span class="legend-dot" style="background:${data.color}"></span>
+                    <span>${data.name}</span>
+                </div>
+            `).join('');
+
+            drawRadarChart();
+        }
+
+        function drawRadarChart() {
+            const centerX = 250;
+            const centerY = 250;
+            const maxRadius = 180;
+            const labels = ['棉花承载力', '用户友好度', '时代真实感', '短剧适配性'];
+            const numPoints = 4;
+
+            ctx.clearRect(0, 0, 500, 500);
+
+            // 绘制网格
+            for (let i = 1; i <= 5; i++) {
+                ctx.beginPath();
+                for (let j = 0; j <= numPoints; j++) {
+                    const angle = (Math.PI * 2 * j / numPoints) - Math.PI / 2;
+                    const r = (maxRadius * i) / 5;
+                    const x = centerX + Math.cos(angle) * r;
+                    const y = centerY + Math.sin(angle) * r;
+                    if (j === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                ctx.stroke();
+            }
+
+            // 绘制轴线
+            for (let i = 0; i < numPoints; i++) {
+                const angle = (Math.PI * 2 * i / numPoints) - Math.PI / 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(centerX + Math.cos(angle) * maxRadius, centerY + Math.sin(angle) * maxRadius);
+                ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                ctx.stroke();
+            }
+
+            // 绘制标签
+            ctx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.fillStyle = '#9ca3af';
+            ctx.textAlign = 'center';
+            for (let i = 0; i < numPoints; i++) {
+                const angle = (Math.PI * 2 * i / numPoints) - Math.PI / 2;
+                const labelRadius = maxRadius + 30;
+                const x = centerX + Math.cos(angle) * labelRadius;
+                const y = centerY + Math.sin(angle) * labelRadius;
+                ctx.fillText(labels[i], x, y + 5);
+            }
+
+            // 绘制数据
+            activeRadarSchemes.forEach(key => {
+                const scheme = allSchemes.find(s => s.code === key);
+                const radarData = radarSchemes[key];
+                if (!scheme) return;
+
+                ctx.beginPath();
+                const scores = [scheme.scores.cotton, scheme.scores.user, scheme.scores.reality, scheme.scores.fit];
+                scores.forEach((score, i) => {
+                    const angle = (Math.PI * 2 * i / numPoints) - Math.PI / 2;
+                    const r = (score / 100) * maxRadius;
+                    const x = centerX + Math.cos(angle) * r;
+                    const y = centerY + Math.sin(angle) * r;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.closePath();
+                ctx.fillStyle = radarData.color + '40';
+                ctx.fill();
+                ctx.strokeStyle = radarData.color;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // 绘制数据点
+                scores.forEach((score, i) => {
+                    const angle = (Math.PI * 2 * i / numPoints) - Math.PI / 2;
+                    const r = (score / 100) * maxRadius;
+                    const x = centerX + Math.cos(angle) * r;
+                    const y = centerY + Math.sin(angle) * r;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = radarData.color;
+                    ctx.fill();
+                });
+            });
+        }
+
+        function toggleRadarScheme(code) {
+            const index = activeRadarSchemes.indexOf(code);
+            if (index > -1) {
+                if (activeRadarSchemes.length > 1) {
+                    activeRadarSchemes.splice(index, 1);
+                }
+            } else {
+                if (activeRadarSchemes.length < 5) {
+                    activeRadarSchemes.push(code);
+                }
+            }
+            initRadarChart();
+        }
+
+        // 四象限点击
+        function showQuadrant(quadrant) {
+            const mapping = {
+                'tr': ['H', 'F', 'B'],
+                'tl': ['I', 'K'],
+                'br': ['J', 'A'],
+                'bl': ['C', 'D']
+            };
+            const schemes = mapping[quadrant] || [];
+
+            // 切换到全部方案视图
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-tab="all"]').classList.add('active');
+            document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
+            document.getElementById('all').style.display = 'block';
+
+            // 筛选并渲染
+            renderSchemesFiltered(schemes);
+        }
+
+        // 渲染筛选后的方案
+        function renderSchemesFiltered(codes) {
+            const grid = document.getElementById('schemeGrid');
+            const filtered = allSchemes.filter(s => codes.includes(s.code));
+            grid.innerHTML = filtered.map(s => createSchemeCard(s)).join('');
+        }
+
+        // 创建方案卡片HTML
+        function createSchemeCard(s) {
+            return `
+                <div class="scheme-card ${s.priority} ${selectedSchemes.includes(s.code) ? 'selected' : ''}" onclick="handleCardClick('${s.code}', event)">
+                    <div class="select-indicator">✓</div>
+                    <div class="scheme-header">
+                        <div>
+                            <div class="scheme-title">
+                                <span style="color:${getPriorityColor(s.priority)};margin-right:8px;">${s.code}</span>
+                                ${s.name}
+                            </div>
+                            <div class="scheme-subtitle">${s.subtitle}</div>
+                        </div>
+                        ${getPriorityTag(s.priority)}
+                    </div>
+                    <div class="scheme-brief">${s.brief}</div>
+                    <div class="scheme-meta">
+                        <div class="meta-item">
+                            <span>用户友好:</span>
+                            <span class="value">${s.scores.user}%</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>棉花承载:</span>
+                            <span class="value">${s.scores.cotton}%</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>时代真实:</span>
+                            <span class="value">${s.scores.reality}%</span>
+                        </div>
+                    </div>
+                    <div style="margin-top:15px;display:flex;gap:10px;">
+                        <button onclick="toggleSelect('${s.code}', event)" class="compare-btn" style="background:${selectedSchemes.includes(s.code) ? 'rgba(37,99,235,0.3)' : 'rgba(255,255,255,0.1)'};color:${selectedSchemes.includes(s.code) ? '#60a5fa' : '#94a3b8'};border:1px solid ${selectedSchemes.includes(s.code) ? 'rgba(37,99,235,0.5)' : 'rgba(255,255,255,0.1)'};">
+                            ${selectedSchemes.includes(s.code) ? '✓ 已选中' : '+ 加入对比'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 渲染方案卡片
+        function renderSchemes(filter = 'all') {
+            const grid = document.getElementById('schemeGrid');
+            let schemes = allSchemes;
+
+            if (filter !== 'all') {
+                schemes = allSchemes.filter(s => s.priority === filter);
+            }
+
+            grid.innerHTML = schemes.map(s => createSchemeCard(s)).join('');
+        }
+
+        // 处理卡片点击
+        function handleCardClick(code, event) {
+            openModal(code);
+        }
+
+        // 切换选中状态
+        function toggleSelect(code, event) {
+            event.stopPropagation();
+            const index = selectedSchemes.indexOf(code);
+            if (index > -1) {
+                selectedSchemes.splice(index, 1);
+            } else {
+                if (selectedSchemes.length >= 4) {
+                    alert('最多只能对比4个方案');
+                    return;
+                }
+                selectedSchemes.push(code);
+            }
+            updateCompareUI();
+            renderSchemes(getCurrentFilter());
+            renderMatrix();
+        }
+
+        // 从表格切换选中
+        function toggleSelectFromTable(code) {
+            toggleSelect(code, { stopPropagation: () => {} });
+            renderMatrix();
+        }
+
+        // 获取当前筛选状态
+        function getCurrentFilter() {
+            const activeBtn = document.querySelector('.filter-btn.active');
+            return activeBtn ? activeBtn.textContent.replace('全部', 'all').replace('P0首选', 'p0').replace('P1重点', 'p1').replace('P2储备', 'p2').replace('风险/实验', 'risk') : 'all';
+        }
+
+        // 更新对比UI
+        function updateCompareUI() {
+            const fab = document.getElementById('compareFab');
+            const count = document.getElementById('compareCount');
+
+            if (selectedSchemes.length > 0) {
+                fab.classList.remove('hidden');
+                count.textContent = selectedSchemes.length;
+            } else {
+                fab.classList.add('hidden');
+                document.getElementById('comparePanel').classList.remove('open');
+            }
+        }
+
+        // 切换对比面板
+        function toggleComparePanel() {
+            const panel = document.getElementById('comparePanel');
+            panel.classList.toggle('open');
+            renderCompareItems();
+        }
+
+        // 渲染对比列表
+        function renderCompareItems() {
+            const container = document.getElementById('compareItems');
+            const summaryContainer = document.getElementById('compareSummary');
+
+            if (selectedSchemes.length === 0) {
+                container.innerHTML = '<p style="color:#64748b;text-align:center;padding:20px;">点击方案卡片上的按钮添加到对比列表</p>';
+                summaryContainer.style.display = 'none';
+                return;
+            }
+
+            container.innerHTML = selectedSchemes.map(code => {
+                const s = allSchemes.find(x => x.code === code);
+                return `
+                    <div class="compare-item">
+                        <div class="compare-item-info">
+                            <span class="compare-item-code" style="background:${getPriorityColor(s.priority)}20;color:${getPriorityColor(s.priority)}">${s.code}</span>
+                            <span class="compare-item-name">${s.name}</span>
+                        </div>
+                        <button class="compare-item-remove" onclick="toggleSelect('${code}', event)">×</button>
+                    </div>
+                `;
+            }).join('');
+
+            // 生成对比摘要
+            if (selectedSchemes.length >= 2) {
+                const selectedData = selectedSchemes.map(code => allSchemes.find(x => x.code === code));
+                const bestUser = selectedData.reduce((a, b) => a.scores.user > b.scores.user ? a : b);
+                const bestCotton = selectedData.reduce((a, b) => a.scores.cotton > b.scores.cotton ? a : b);
+                const bestReality = selectedData.reduce((a, b) => a.scores.reality > b.scores.reality ? a : b);
+                const bestFit = selectedData.reduce((a, b) => a.scores.fit > b.scores.fit ? a : b);
+
+                summaryContainer.innerHTML = `
+                    <div class="compare-summary-title">📊 对比分析</div>
+                    <div class="compare-summary-text">
+                        <div>• 用户友好最高：<strong style="color:#60a5fa">${bestUser.code} ${bestUser.name}</strong> (${bestUser.scores.user}%)</div>
+                        <div>• 棉花承载最高：<strong style="color:#a78bfa">${bestCotton.code} ${bestCotton.name}</strong> (${bestCotton.scores.cotton}%)</div>
+                        <div>• 时代真实最高：<strong style="color:#34d399">${bestReality.code} ${bestReality.name}</strong> (${bestReality.scores.reality}%)</div>
+                        <div>• 短剧适配最高：<strong style="color:#fbbf24">${bestFit.code} ${bestFit.name}</strong> (${bestFit.scores.fit}%)</div>
+                    </div>
+                `;
+                summaryContainer.style.display = 'block';
+            } else {
+                summaryContainer.style.display = 'none';
+            }
+        }
+
+        // 清空对比
+        function clearCompare() {
+            selectedSchemes = [];
+            updateCompareUI();
+            renderSchemes(getCurrentFilter());
+            renderMatrix();
+            renderCompareItems();
+        }
+
+        // 渲染推荐方案
+        function renderRecommended() {
+            const container = document.getElementById('recommendedContent');
+            const p0 = allSchemes.filter(s => s.priority === 'p0');
+
+            container.innerHTML = `
+                <div style="margin-bottom:30px;">
+                    <h3 style="color:#60a5fa;margin-bottom:20px;">🔷 P0 首选方案（5个）</h3>
+                    <div class="scheme-grid">
+                        ${p0.map(s => `
+                            <div class="scheme-card p0 ${selectedSchemes.includes(s.code) ? 'selected' : ''}" onclick="handleCardClick('${s.code}', event)">
+                                <div class="select-indicator">✓</div>
+                                <div class="scheme-header">
+                                    <div>
+                                        <div class="scheme-title">${s.code} ${s.name}</div>
+                                        <div class="scheme-subtitle">${s.subtitle}</div>
+                                    </div>
+                                    <span class="tag tag-p0">首推</span>
+                                </div>
+                                <div class="scheme-brief">${s.brief}</div>
+                                <div style="margin-top:15px;padding:15px;background:rgba(37,99,235,0.1);border-radius:12px;">
+                                    <strong style="color:#60a5fa;">核心优势：</strong>
+                                    <p style="color:#94a3b8;margin-top:8px;font-size:0.9rem;">${s.pros[0]}</p>
+                                </div>
+                                <div style="margin-top:15px;display:flex;gap:10px;">
+                                    <button onclick="toggleSelect('${s.code}', event)" class="compare-btn" style="background:rgba(37,99,235,0.2);color:#60a5fa;border:1px solid rgba(37,99,235,0.3);">
+                                        ${selectedSchemes.includes(s.code) ? '✓ 已选中对比' : '+ 加入对比'}
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div style="background:rgba(255,255,255,0.05);padding:30px;border-radius:20px;">
+                    <h3 style="color:#fbbf24;margin-bottom:15px;">💡 核心建议</h3>
+                    <p style="color:#cbd5e1;line-height:1.8;">
+                        基于综合评估，建议采用 <strong style="color:#60a5fa;">H物件叙事</strong> 或 <strong style="color:#60a5fa;">F卷宗事件链</strong> 作为第一季主方案。
+                        这两个方案最平衡地满足了"讲好棉花故事"的核心要求，同时具备良好的用户友好度和短剧适配性。
+                        建议并行开发，根据市场反馈迭代优化。
+                    </p>
+                </div>
+            `;
+        }
+
+        // 打开详情模态框
+        function openModal(code) {
+            const s = allSchemes.find(x => x.code === code);
+            if (!s) return;
+
+            document.getElementById('modalTitle').innerHTML = `
+                <span style="color:${getPriorityColor(s.priority)};margin-right:10px;">${s.code}</span>
+                ${s.name}
+                ${getPriorityTag(s.priority)}
+            `;
+
+            document.getElementById('modalBody').innerHTML = `
+                <div class="detail-section">
+                    <h3>📝 一句话定义</h3>
+                    <p>${s.core}</p>
+                </div>
+
+                <div class="detail-section">
+                    <h3>🎭 核心设定</h3>
+                    <p>${s.setup}</p>
+                </div>
+
+                <div class="detail-section">
+                    <h3>📖 剧情组织方式</h3>
+                    <p>${s.narrative}</p>
+                </div>
+
+                <div class="detail-section">
+                    <h3>📊 四维评分</h3>
+                    <div class="score-bars">
+                        <div class="score-item">
+                            <div class="score-label">
+                                <span>用户友好度</span>
+                                <span class="score-value">${s.scores.user}%</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill" style="width:${s.scores.user}%;background:linear-gradient(90deg,#2563eb,#60a5fa);"></div>
+                            </div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">
+                                <span>棉花承载力</span>
+                                <span class="score-value">${s.scores.cotton}%</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill" style="width:${s.scores.cotton}%;background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div>
+                            </div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">
+                                <span>时代真实感</span>
+                                <span class="score-value">${s.scores.reality}%</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill" style="width:${s.scores.reality}%;background:linear-gradient(90deg,#059669,#34d399);"></div>
+                            </div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">
+                                <span>短剧适配性</span>
+                                <span class="score-value">${s.scores.fit}%</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill" style="width:${s.scores.fit}%;background:linear-gradient(90deg,#d97706,#fbbf24);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>✅ 主要优势</h3>
+                    <ul class="detail-list">
+                        ${s.pros.map(p => `<li>${p}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="detail-section">
+                    <h3>⚠️ 主要风险</h3>
+                    <ul class="detail-list">
+                        ${s.cons.map(c => `<li>${c}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="detail-section">
+                    <h3>🎬 示例剧集</h3>
+                    <ul class="detail-list">
+                        ${s.examples.map(e => `<li>${e}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="detail-section">
+                    <h3>🎯 推荐场景</h3>
+                    <p>${s.scene}</p>
+                </div>
+
+                <div style="margin-top:20px;">
+                    <button onclick="toggleSelect('${s.code}', event)" class="compare-btn" style="background:${selectedSchemes.includes(s.code) ? 'rgba(37,99,235,0.3)' : 'rgba(37,99,235,0.2)'};color:#60a5fa;border:1px solid rgba(37,99,235,0.3);padding:12px 24px;">
+                        ${selectedSchemes.includes(s.code) ? '✓ 已加入对比' : '+ 加入对比'}
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('modalOverlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 关闭模态框
+        function closeModal(event) {
+            if (!event || event.target === document.getElementById('modalOverlay')) {
+                document.getElementById('modalOverlay').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // 筛选方案
+        function filterSchemes(filter) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderSchemes(filter);
+        }
+
+        // 导航切换
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const targetId = tab.dataset.tab;
+
+                // 隐藏所有卡片
+                document.querySelectorAll('.card').forEach(card => card.style.display = 'none');
+
+                // 显示目标卡片并渲染
+                if (targetId === 'overview' || targetId === 'quadrant' || targetId === 'radar' || targetId === 'decision' || targetId === 'gantt') {
+                    document.getElementById(targetId).style.display = 'block';
+                    if (targetId === 'radar') {
+                        initRadarChart();
+                    }
+                } else if (targetId === 'all') {
+                    document.getElementById('all').style.display = 'block';
+                    renderSchemes();
+                } else if (targetId === 'recommended') {
+                    document.getElementById('recommended').style.display = 'block';
+                    renderRecommended();
+                }
+
+                document.getElementById(targetId === 'recommended' ? 'recommended' : targetId).scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            renderMatrix();
+            renderSchemes();
+            renderRecommended();
+            initRadarChart();
+        });
+
+        // 键盘事件
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
