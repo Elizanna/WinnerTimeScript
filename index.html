@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>棉宇宙短剧框架方案决策系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 头部 */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #9ca3af;
+            font-size: 1.1rem;
+        }
+
+        /* 导航标签 */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            border-color: transparent;
+        }
+
+        /* 卡片 */
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title .icon {
+            font-size: 1.8rem;
+        }
+
+        /* 方案对比表格 */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        th {
+            background: rgba(255,255,255,0.1);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .scheme-name {
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .star {
+            color: #fbbf24;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .tag-primary { background: rgba(37, 99, 235, 0.3); color: #60a5fa; }
+        .tag-success { background: rgba(5, 150, 105, 0.3); color: #34d399; }
+        .tag-warning { background: rgba(217, 119, 6, 0.3); color: #fbbf24; }
+        .tag-danger { background: rgba(220, 38, 38, 0.3); color: #f87171; }
+
+        /* 雷达图容器 */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            aspect-ratio: 1;
+        }
+
+        .chart-grid {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .chart-grid circle {
+            fill: none;
+            stroke: rgba(255,255,255,0.1);
+        }
+
+        .chart-grid line {
+            stroke: rgba(255,255,255,0.1);
+        }
+
+        .chart-label {
+            position: absolute;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #9ca3af;
+        }
+
+        .chart-point {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chart-point:hover {
+            transform: scale(1.2);
+        }
+
+        /* 图例 */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .legend-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .legend-item.active {
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        /* 四象限图 */
+        .quadrant-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1.2;
+            max-height: 500px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .quadrant {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quadrant:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .quadrant-tl { top: 0; left: 0; border-right: 1px dashed rgba(255,255,255,0.2); border-bottom: 1px dashed rgba(255,255,255,0.2); }
+        .quadrant-tr { top: 0; right: 0; border-left: 1px dashed rgba(255,255,255,0.2); border-bottom: 1px dashed rgba(255,255,255,0.2); }
+        .quadrant-bl { bottom: 0; left: 0; border-right: 1px dashed rgba(255,255,255,0.2); border-top: 1px dashed rgba(255,255,255,0.2); }
+        .quadrant-br { bottom: 0; right: 0; border-left: 1px dashed rgba(255,255,255,0.2); border-top: 1px dashed rgba(255,255,255,0.2); }
+
+        .quadrant-label {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+
+        .quadrant-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .quadrant-schemes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .quadrant-scheme {
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .quadrant-scheme:hover {
+            transform: scale(1.05);
+            background: rgba(255,255,255,0.2);
+        }
+
+        .quadrant-axis {
+            position: absolute;
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .axis-x { bottom: 10px; left: 50%; transform: translateX(-50%); }
+        .axis-y { left: 10px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+
+        /* 决策树 */
+        .decision-tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .tree-level {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tree-node {
+            padding: 20px 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 180px;
+            border: 2px solid transparent;
+        }
+
+        .tree-node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .tree-node.root {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .tree-node.level1 {
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .tree-node.level2 {
+            background: rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+        }
+
+        .tree-connector {
+            width: 2px;
+            height: 30px;
+            background: rgba(255,255,255,0.3);
+            position: relative;
+        }
+
+        .tree-connector::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 10px solid rgba(255,255,255,0.3);
+        }
+
+        /* 甘特图 */
+        .gantt-chart {
+            overflow-x: auto;
+        }
+
+        .gantt-row {
+            display: grid;
+            grid-template-columns: 150px repeat(12, 1fr);
+            gap: 2px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .gantt-label {
+            font-weight: 500;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        .gantt-bar-container {
+            grid-column: span 12;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2px;
+            height: 40px;
+            position: relative;
+        }
+
+        .gantt-cell {
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .gantt-bar {
+            position: absolute;
+            height: 30px;
+            top: 5px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .gantt-bar:hover {
+            transform: scaleY(1.1);
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .gantt-header {
+            display: grid;
+            grid-template-columns: 150px repeat(12, 1fr);
+            gap: 2px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        .gantt-header span {
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* 推荐卡片 */
+        .recommendation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .rec-card {
+            padding: 25px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .rec-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .rec-card.p0 {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.3), rgba(124, 58, 237, 0.3));
+            border-color: #2563eb;
+        }
+
+        .rec-card.p1 {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.3), rgba(16, 185, 129, 0.3));
+            border-color: #059669;
+        }
+
+        .rec-card.p2 {
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.3), rgba(245, 158, 11, 0.3));
+            border-color: #d97706;
+        }
+
+        .rec-priority {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .p0 .rec-priority { background: rgba(37, 99, 235, 0.5); }
+        .p1 .rec-priority { background: rgba(5, 150, 105, 0.5); }
+        .p2 .rec-priority { background: rgba(217, 119, 6, 0.5); }
+
+        .rec-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .rec-desc {
+            color: #9ca3af;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .rec-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* 详情面板 */
+        .detail-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: rgba(20, 20, 40, 0.98);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255,255,255,0.1);
+            padding: 30px;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 1000;
+        }
+
+        .detail-panel.open {
+            right: 0;
+        }
+
+        .detail-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .detail-close:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+
+        .detail-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .detail-content h3 {
+            font-size: 1.2rem;
+            color: #9ca3af;
+            margin: 25px 0 15px 0;
+        }
+
+        .detail-content p {
+            color: #d1d5db;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .detail-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .detail-content li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .detail-content li::before {
+            content: '•';
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .score-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* 遮罩 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 999;
+        }
+
+        .overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .nav-tabs {
+                gap: 8px;
+            }
+
+            .nav-tab {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+
+            .detail-panel {
+                width: 100%;
+                right: -100%;
+            }
+
+            .gantt-row {
+                grid-template-columns: 100px repeat(12, 1fr);
+            }
+        }
+
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.2s; }
+        .card:nth-child(4) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>🎬 棉宇宙短剧框架方案决策系统</h1>
+            <p>基于棉花帝国历史背景的短剧创作框架分析 | 2026春季汇报</p>
+        </div>
+
+        <!-- 导航标签 -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="overview">📊 总览</div>
+            <div class="nav-tab" data-tab="matrix">📈 四象限矩阵</div>
+            <div class="nav-tab" data-tab="radar">🎯 雷达图</div>
+            <div class="nav-tab" data-tab="decision">🌲 决策树</div>
+            <div class="nav-tab" data-tab="gantt">📅 实施路径</div>
+            <div class="nav-tab" data-tab="recommend">💡 推荐方案</div>
+        </div>
+
+        <!-- 总览表格 -->
+        <div class="card" id="overview">
+            <div class="card-title">
+                <span class="icon">📊</span>
+                <span>方案综合评估矩阵</span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>方案名称</th>
+                            <th>棉花承载力</th>
+                            <th>用户友好度</th>
+                            <th>时代真实感</th>
+                            <th>短剧适配性</th>
+                            <th>综合评分</th>
+                            <th>推荐等级</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="scheme-row" data-scheme="h" onclick="showDetail('h')">
+                            <td class="scheme-name">🔷 H 物件叙事</td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><span class="star">★★★★</span></td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><span class="star">★★★★</span></td>
+                            <td><strong style="color:#60a5fa">23/25</strong></td>
+                            <td><span class="tag tag-primary">首推</span></td>
+                        </tr>
+                        <tr class="scheme-row" data-scheme="f" onclick="showDetail('f')">
+                            <td class="scheme-name">🔷 F 卷宗事件链</td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><span class="star">★★★★</span></td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><strong style="color:#60a5fa">23/25</strong></td>
+                            <td><span class="tag tag-primary">首推</span></td>
+                        </tr>
+                        <tr class="scheme-row" data-scheme="b" onclick="showDetail('b')">
+                            <td class="scheme-name">🟢 B 双主线对照</td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><strong style="color:#34d399">25/25</strong></td>
+                            <td><span class="tag tag-success">重点</span></td>
+                        </tr>
+                        <tr class="scheme-row" data-scheme="i" onclick="showDetail('i')">
+                            <td class="scheme-name">🟡 I 反派视角</td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><span class="star">★★★★</span></td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><span class="star">★★★★</span></td>
+                            <td><strong style="color:#fbbf24">22/25</strong></td>
+                            <td><span class="tag tag-warning">储备</span></td>
+                        </tr>
+                        <tr class="scheme-row" data-scheme="j" onclick="showDetail('j')">
+                            <td class="scheme-name">🟡 J 女性群像</td>
+                            <td><span class="star">★★★★</span></td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><span class="star">★★★★</span></td>
+                            <td><strong style="color:#fbbf24">22/25</strong></td>
+                            <td><span class="tag tag-warning">储备</span></td>
+                        </tr>
+                        <tr class="scheme-row" data-scheme="a" onclick="showDetail('a')">
+                            <td class="scheme-name">A 单主角成长</td>
+                            <td><span class="star">★★★★</span></td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><span class="star">★★★</span></td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><strong>17/25</strong></td>
+                            <td><span class="tag tag-danger">风险</span></td>
+                        </tr>
+                        <tr class="scheme-row" data-scheme="d" onclick="showDetail('d')">
+                            <td class="scheme-name">D 云图式互文</td>
+                            <td><span class="star">★★★★★</span></td>
+                            <td><span class="star">★★★</span></td>
+                            <td><span class="star">★★★★</span></td>
+                            <td><span class="star">★★★</span></td>
+                            <td><strong>15/25</strong></td>
+                            <td><span class="tag tag-danger">实验</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="color:#9ca3af;margin-top:20px;text-align:center;font-size:0.9rem;">
+                💡 点击任意一行查看方案详细分析
+            </p>
+        </div>
+
+        <!-- 四象限矩阵 -->
+        <div class="card" id="matrix">
+            <div class="card-title">
+                <span class="icon">📈</span>
+                <span>方案定位四象限矩阵</span>
+            </div>
+            <div class="quadrant-container">
+                <div class="quadrant quadrant-tl" onclick="filterByQuadrant('tl')">
+                    <div class="quadrant-label">高棉花承载 · 低用户友好</div>
+                    <div class="quadrant-title">🎭 深度储备区</div>
+                    <div class="quadrant-schemes">
+                        <span class="quadrant-scheme">I反派视角</span>
+                        <span class="quadrant-scheme">K数字人文</span>
+                    </div>
+                </div>
+                <div class="quadrant quadrant-tr" onclick="filterByQuadrant('tr')">
+                    <div class="quadrant-label">高棉花承载 · 高用户友好</div>
+                    <div class="quadrant-title">⭐ 首推区域</div>
+                    <div class="quadrant-schemes">
+                        <span class="quadrant-scheme" style="background:#2563eb">H物件叙事</span>
+                        <span class="quadrant-scheme" style="background:#2563eb">F卷宗事件链</span>
+                        <span class="quadrant-scheme" style="background:#059669">B双主线</span>
+                    </div>
+                </div>
+                <div class="quadrant quadrant-bl" onclick="filterByQuadrant('bl')">
+                    <div class="quadrant-label">低棉花承载 · 低用户友好</div>
+                    <div class="quadrant-title">⚠️ 风险区域</div>
+                    <div class="quadrant-schemes">
+                        <span class="quadrant-scheme">C群像编年史</span>
+                        <span class="quadrant-scheme">D云图式</span>
+                    </div>
+                </div>
+                <div class="quadrant quadrant-br" onclick="filterByQuadrant('br')">
+                    <div class="quadrant-label">低棉花承载 · 高用户友好</div>
+                    <div class="quadrant-title">💝 情感优先区</div>
+                    <div class="quadrant-schemes">
+                        <span class="quadrant-scheme" style="background:#d97706">J女性群像</span>
+                        <span class="quadrant-scheme">A单主角</span>
+                    </div>
+                </div>
+                <div class="quadrant-axis axis-x">→ 用户友好度 →</div>
+                <div class="quadrant-axis axis-y">↑ 棉花承载力 ↑</div>
+            </div>
+        </div>
+
+        <!-- 雷达图 -->
+        <div class="card" id="radar">
+            <div class="card-title">
+                <span class="icon">🎯</span>
+                <span>核心方案雷达图对比</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="radarChart" width="500" height="500"></canvas>
+            </div>
+            <div class="legend">
+                <div class="legend-item active" onclick="toggleScheme('h')">
+                    <span class="legend-dot" style="background:#2563eb"></span>
+                    <span>H 物件叙事</span>
+                </div>
+                <div class="legend-item active" onclick="toggleScheme('f')">
+                    <span class="legend-dot" style="background:#7c3aed"></span>
+                    <span>F 卷宗事件链</span>
+                </div>
+                <div class="legend-item" onclick="toggleScheme('b')">
+                    <span class="legend-dot" style="background:#059669"></span>
+                    <span>B 双主线对照</span>
+                </div>
+                <div class="legend-item" onclick="toggleScheme('i')">
+                    <span class="legend-dot" style="background:#d97706"></span>
+                    <span>I 反派视角</span>
+                </div>
+                <div class="legend-item" onclick="toggleScheme('j')">
+                    <span class="legend-dot" style="background:#dc2626"></span>
+                    <span>J 女性群像</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 决策树 -->
+        <div class="card" id="decision">
+            <div class="card-title">
+                <span class="icon">🌲</span>
+                <span>决策路径树</span>
+            </div>
+            <div class="decision-tree">
+                <div class="tree-level">
+                    <div class="tree-node root" onclick="highlightPath('root')">
+                        核心目标是什么？
+                    </div>
+                </div>
+                <div class="tree-connector"></div>
+                <div class="tree-level">
+                    <div class="tree-node level1" onclick="highlightPath('path1')">
+                        <div style="font-size:1.2rem;margin-bottom:5px;">🎬</div>
+                        讲好棉花故事<br>
+                        <small style="color:#9ca3af">(Jack要求)</small>
+                    </div>
+                    <div class="tree-node level1" onclick="highlightPath('path2')">
+                        <div style="font-size:1.2rem;margin-bottom:5px;">⚖️</div>
+                        平衡棉花+人物<br>
+                        <small style="color:#9ca3af">(折中方案)</small>
+                    </div>
+                    <div class="tree-node level1" onclick="highlightPath('path3')">
+                        <div style="font-size:1.2rem;margin-bottom:5px;">❤️</div>
+                        人物情感优先<br>
+                        <small style="color:#9ca3af">(用户导向)</small>
+                    </div>
+                </div>
+                <div class="tree-connector"></div>
+                <div class="tree-level">
+                    <div class="tree-node level2">H 物件叙事</div>
+                    <div class="tree-node level2">F 卷宗事件链</div>
+                    <div class="tree-node level2">B 双主线对照</div>
+                    <div class="tree-node level2">J 女性群像</div>
+                    <div class="tree-node level2">A 单主角</div>
+                </div>
+                <div class="tree-connector"></div>
+                <div class="tree-level">
+                    <div class="tree-node level2" style="background:rgba(37,99,235,0.3);border:1px solid #2563eb;">
+                        最贴题 ✓
+                    </div>
+                    <div class="tree-node level2" style="background:rgba(37,99,235,0.3);border:1px solid #2563eb;">
+                        最平衡 △
+                    </div>
+                    <div class="tree-node level2" style="background:rgba(217,119,6,0.3);border:1px solid #d97706;">
+                        最情感化 ⚠
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 甘特图 -->
+        <div class="card" id="gantt">
+            <div class="card-title">
+                <span class="icon">📅</span>
+                <span>推荐实施路径</span>
+            </div>
+            <div class="gantt-chart">
+                <div class="gantt-header">
+                    <span>方案</span>
+                    <span>W1</span><span>W2</span><span>W3</span><span>W4</span><span>W5</span><span>W6</span>
+                    <span>W7</span><span>W8</span><span>W9</span><span>W10</span><span>W11</span><span>W12</span>
+                </div>
+                <div class="gantt-row">
+                    <div class="gantt-label">H 物件叙事</div>
+                    <div class="gantt-bar-container">
+                        <div class="gantt-bar" style="left:8.3%;width:16.6%;background:linear-gradient(90deg,#2563eb,#60a5fa);" title="细纲开发">细纲</div>
+                        <div class="gantt-bar" style="left:25%;width:16.6%;background:linear-gradient(90deg,#7c3aed,#a78bfa);" title="剧本创作">剧本</div>
+                        <div class="gantt-bar" style="left:41.6%;width:25%;background:linear-gradient(90deg,#059669,#34d399);" title="制作阶段">制作</div>
+                        <div class="gantt-bar" style="left:66.6%;width:16.6%;background:linear-gradient(90deg,#d97706,#fbbf24);" title="测试上线">测试</div>
+                    </div>
+                </div>
+                <div class="gantt-row">
+                    <div class="gantt-label">F 卷宗事件链</div>
+                    <div class="gantt-bar-container">
+                        <div class="gantt-bar" style="left:8.3%;width:16.6%;background:linear-gradient(90deg,#2563eb,#60a5fa);" title="细纲开发">细纲</div>
+                        <div class="gantt-bar" style="left:25%;width:16.6%;background:linear-gradient(90deg,#7c3aed,#a78bfa);" title="剧本创作">剧本</div>
+                        <div class="gantt-bar" style="left:41.6%;width:25%;background:linear-gradient(90deg,#059669,#34d399);" title="制作阶段">制作</div>
+                        <div class="gantt-bar" style="left:66.6%;width:16.6%;background:linear-gradient(90deg,#d97706,#fbbf24);" title="测试上线">测试</div>
+                    </div>
+                </div>
+                <div class="gantt-row">
+                    <div class="gantt-label">I 反派视角</div>
+                    <div class="gantt-bar-container">
+                        <div class="gantt-bar" style="left:25%;width:16.6%;background:rgba(255,255,255,0.2);" title="储备开发">储备</div>
+                        <div class="gantt-bar" style="left:41.6%;width:25%;background:rgba(255,255,255,0.2);" title="剧本创作">剧本</div>
+                        <div class="gantt-bar" style="left:66.6%;width:25%;background:rgba(255,255,255,0.2);" title="制作阶段">制作</div>
+                    </div>
+                </div>
+                <div class="gantt-row">
+                    <div class="gantt-label">J 女性群像</div>
+                    <div class="gantt-bar-container">
+                        <div class="gantt-bar" style="left:25%;width:16.6%;background:rgba(255,255,255,0.2);" title="储备开发">储备</div>
+                        <div class="gantt-bar" style="left:41.6%;width:25%;background:rgba(255,255,255,0.2);" title="剧本创作">剧本</div>
+                        <div class="gantt-bar" style="left:66.6%;width:25%;background:rgba(255,255,255,0.2);" title="制作阶段">制作</div>
+                    </div>
+                </div>
+            </div>
+            <p style="color:#9ca3af;margin-top:20px;text-align:center;font-size:0.9rem;">
+                💡 H+F 并行开发，I+J 储备迭代
+            </p>
+        </div>
+
+        <!-- 推荐方案 -->
+        <div class="card" id="recommend">
+            <div class="card-title">
+                <span class="icon">💡</span>
+                <span>最终推荐方案</span>
+            </div>
+            <div class="recommendation-grid">
+                <div class="rec-card p0" onclick="showDetail('h')">
+                    <span class="rec-priority">P0 首选</span>
+                    <div class="rec-title">🔷 物件叙事</div>
+                    <div class="rec-desc">
+                        以棉质物品为载体，通过物件的"旅程"串联历史。
+                        棉花是绝对主角，完美契合"讲好棉花故事"的核心要求。
+                    </div>
+                    <div class="rec-tags">
+                        <span class="tag tag-primary">高棉花承载</span>
+                        <span class="tag tag-primary">高真实感</span>
+                    </div>
+                </div>
+                <div class="rec-card p0" onclick="showDetail('f')">
+                    <span class="rec-priority">P0 首选</span>
+                    <div class="rec-title">🔷 卷宗事件链</div>
+                    <div class="rec-desc">
+                        每集一个"棉花案件"，悬疑叙事结构。
+                        市场已有验证（历史悬疑类型），爆款潜力大。
+                    </div>
+                    <div class="rec-tags">
+                        <span class="tag tag-primary">悬疑类型</span>
+                        <span class="tag tag-primary">高适配性</span>
+                    </div>
+                </div>
+                <div class="rec-card p1">
+                    <span class="rec-priority">P1 重点</span>
+                    <div class="rec-title">🟢 双主线对照</div>
+                    <div class="rec-desc">
+                        国家博弈线+人物情感线并行。
+                        最平衡，但编剧难度高，建议第二季迭代。
+                    </div>
+                    <div class="rec-tags">
+                        <span class="tag tag-success">最平衡</span>
+                        <span class="tag tag-warning">高难度</span>
+                    </div>
+                </div>
+                <div class="rec-card p2">
+                    <span class="rec-priority">P2 储备</span>
+                    <div class="rec-title">🟡 反派视角</div>
+                    <div class="rec-desc">
+                        通过"恶人的代价"传递反思。
+                        差异化强，适合深度内容储备。
+                    </div>
+                    <div class="rec-tags">
+                        <span class="tag tag-warning">差异化</span>
+                        <span class="tag tag-warning">深度向</span>
+                    </div>
+                </div>
+                <div class="rec-card p2">
+                    <span class="rec-priority">P2 储备</span>
+                    <div class="rec-title">🟡 女性群像</div>
+                    <div class="rec-desc">
+                        聚焦棉花产业链中的女性视角。
+                        内容趋势好，女性用户友好。
+                    </div>
+                    <div class="rec-tags">
+                        <span class="tag tag-warning">趋势向</span>
+                        <span class="tag tag-warning">情感向</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 详情面板 -->
+    <div class="overlay" onclick="closeDetail()"></div>
+    <div class="detail-panel" id="detailPanel">
+        <button class="detail-close" onclick="closeDetail()">×</button>
+        <div class="detail-content" id="detailContent">
+            <!-- 动态内容 -->
+        </div>
+    </div>
+
+    <script>
+        // 方案详情数据
+        const schemeData = {
+            h: {
+                name: 'H 物件叙事',
+                score: { cotton: 95, user: 80, reality: 90, fit: 85 },
+                pros: [
+                    '棉花是绝对主角，不存在IP抢戏问题',
+                    '物件具象化，易于视觉呈现',
+                    '每集独立，创作灵活性高',
+                    '完美契合"讲好棉花故事"要求'
+                ],
+                cons: [
+                    '物件选择需要极强洞察力',
+                    '情感浓度依赖物件背后的故事质量',
+                    '视觉包装要求高'
+                ],
+                scenes: ['首推P0', '正式立项', '第一季主方案']
+            },
+            f: {
+                name: 'F 卷宗事件链',
+                score: { cotton: 95, user: 80, reality: 95, fit: 90 },
+                pros: [
+                    '悬疑类型有成熟市场验证',
+                    '每集一个完整案件，节奏紧凑',
+                    '天然强钩子，短视频平台友好',
+                    '历史真实感强'
+                ],
+                cons: [
+                    '情感锚点相对较弱',
+                    '需要找到有戏剧张力的真实历史案件',
+                    '人物塑造空间有限'
+                ],
+                scenes: ['首推P0', '快速验证', '悬疑类型爱好者']
+            },
+            b: {
+                name: 'B 双主线对照',
+                score: { cotton: 100, user: 95, reality: 95, fit: 90 },
+                pros: [
+                    '最平衡的方案',
+                    '人物情感线增强用户粘性',
+                    '国家博弈线提升深度',
+                    '综合评分最高'
+                ],
+                cons: [
+                    '两条线平衡难度极高',
+                    '编剧要求苛刻',
+                    '制作成本相对较高',
+                    '建议有成功经验后再尝试'
+                ],
+                scenes: ['P1重点', '第二季迭代', '长剧/电影改编']
+            },
+            i: {
+                name: 'I 反派视角',
+                score: { cotton: 90, user: 75, reality: 90, fit: 80 },
+                pros: [
+                    '差异化叙事角度',
+                    '通过"恶人的代价"传递深刻反思',
+                    '每集一个反派人物，角色鲜明',
+                    '有强烈的戏剧张力'
+                ],
+                cons: [
+                    '反派塑造需要把握尺度',
+                    '避免美化剥削行为',
+                    '情感共鸣可能较弱'
+                ],
+                scenes: ['P2储备', '深度内容线', '文艺向储备']
+            },
+            j: {
+                name: 'J 女性群像',
+                score: { cotton: 75, user: 90, reality: 90, fit: 80 },
+                pros: [
+                    '女性题材天然有情感共鸣',
+                    '当下内容趋势利好',
+                    '差异化定位避开同质化',
+                    '用户友好度高'
+                ],
+                cons: [
+                    '棉花作为主角的定位被削弱',
+                    '需要扎实的女性史研究',
+                    '可能偏离"讲好棉花故事"核心'
+                ],
+                scenes: ['P2储备', '女性向内容线', '第二季备选']
+            },
+            a: {
+                name: 'A 单主角成长',
+                score: { cotton: 70, user: 90, reality: 60, fit: 85 },
+                pros: [
+                    '用户友好度最高',
+                    '情感投入最深',
+                    'IP运营空间大'
+                ],
+                cons: [
+                    '主角容易"抢戏"，棉花变配角',
+                    '与Jack"不讲IP"要求冲突',
+                    '穿越感可能削弱时代真实感'
+                ],
+                scenes: ['风险方案', 'IP运营向', '非首选']
+            },
+            d: {
+                name: 'D 云图式互文',
+                score: { cotton: 85, user: 55, reality: 70, fit: 55 },
+                pros: [
+                    '主题轮回有深度',
+                    '艺术性强'
+                ],
+                cons: [
+                    '观众认知成本极高',
+                    '短剧平台算法不友好',
+                    '制作难度大',
+                    '与"真实"要求有冲突'
+                ],
+                scenes: ['实验方案', '文艺片向', '非主流']
+            }
+        };
+
+        // 雷达图数据
+        const radarData = {
+            h: { color: '#2563eb', scores: [95, 80, 90, 85] },
+            f: { color: '#7c3aed', scores: [95, 80, 95, 90] },
+            b: { color: '#059669', scores: [100, 95, 95, 90] },
+            i: { color: '#d97706', scores: [90, 75, 90, 80] },
+            j: { color: '#dc2626', scores: [75, 90, 90, 80] }
+        };
+
+        let activeSchemes = ['h', 'f'];
+        let canvas, ctx;
+
+        // 初始化雷达图
+        function initRadarChart() {
+            canvas = document.getElementById('radarChart');
+            ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = 500 * dpr;
+            canvas.height = 500 * dpr;
+            canvas.style.width = '500px';
+            canvas.style.height = '500px';
+            ctx.scale(dpr, dpr);
+            drawRadarChart();
+        }
+
+        function drawRadarChart() {
+            const centerX = 250;
+            const centerY = 250;
+            const maxRadius = 180;
+            const labels = ['棉花承载力', '用户友好度', '时代真实感', '短剧适配性'];
+            const numPoints = 4;
+
+            ctx.clearRect(0, 0, 500, 500);
+
+            // 绘制网格
+            for (let i = 1; i <= 5; i++) {
+                ctx.beginPath();
+                for (let j = 0; j <= numPoints; j++) {
+                    const angle = (Math.PI * 2 * j / numPoints) - Math.PI / 2;
+                    const r = (maxRadius * i) / 5;
+                    const x = centerX + Math.cos(angle) * r;
+                    const y = centerY + Math.sin(angle) * r;
+                    if (j === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                ctx.stroke();
+            }
+
+            // 绘制轴线
+            for (let i = 0; i < numPoints; i++) {
+                const angle = (Math.PI * 2 * i / numPoints) - Math.PI / 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(centerX + Math.cos(angle) * maxRadius, centerY + Math.sin(angle) * maxRadius);
+                ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                ctx.stroke();
+            }
+
+            // 绘制标签
+            ctx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.fillStyle = '#9ca3af';
+            ctx.textAlign = 'center';
+            for (let i = 0; i < numPoints; i++) {
+                const angle = (Math.PI * 2 * i / numPoints) - Math.PI / 2;
+                const labelRadius = maxRadius + 30;
+                const x = centerX + Math.cos(angle) * labelRadius;
+                const y = centerY + Math.sin(angle) * labelRadius;
+                ctx.fillText(labels[i], x, y + 5);
+            }
+
+            // 绘制数据
+            activeSchemes.forEach(key => {
+                const scheme = radarData[key];
+                if (!scheme) return;
+
+                ctx.beginPath();
+                scheme.scores.forEach((score, i) => {
+                    const angle = (Math.PI * 2 * i / numPoints) - Math.PI / 2;
+                    const r = (score / 100) * maxRadius;
+                    const x = centerX + Math.cos(angle) * r;
+                    const y = centerY + Math.sin(angle) * r;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.closePath();
+                ctx.fillStyle = scheme.color + '40';
+                ctx.fill();
+                ctx.strokeStyle = scheme.color;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // 绘制数据点
+                scheme.scores.forEach((score, i) => {
+                    const angle = (Math.PI * 2 * i / numPoints) - Math.PI / 2;
+                    const r = (score / 100) * maxRadius;
+                    const x = centerX + Math.cos(angle) * r;
+                    const y = centerY + Math.sin(angle) * r;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = scheme.color;
+                    ctx.fill();
+                });
+            });
+        }
+
+        function toggleScheme(key) {
+            const item = event.currentTarget;
+            if (activeSchemes.includes(key)) {
+                if (activeSchemes.length > 1) {
+                    activeSchemes = activeSchemes.filter(k => k !== key);
+                    item.classList.remove('active');
+                }
+            } else {
+                activeSchemes.push(key);
+                item.classList.add('active');
+            }
+            drawRadarChart();
+        }
+
+        // 详情面板
+        function showDetail(key) {
+            const data = schemeData[key];
+            if (!data) return;
+
+            const content = `
+                <h2>${data.name}</h2>
+                <h3>📊 四维评分</h3>
+                <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                        <span>棉花承载力</span><span>${data.score.cotton}%</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width:${data.score.cotton}%;background:#2563eb;"></div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                        <span>用户友好度</span><span>${data.score.user}%</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width:${data.score.user}%;background:#7c3aed;"></div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                        <span>时代真实感</span><span>${data.score.reality}%</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width:${data.score.reality}%;background:#059669;"></div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                        <span>短剧适配性</span><span>${data.score.fit}%</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width:${data.score.fit}%;background:#d97706;"></div>
+                    </div>
+                </div>
+                <h3>✅ 优势</h3>
+                <ul>
+                    ${data.pros.map(p => `<li>${p}</li>`).join('')}
+                </ul>
+                <h3>⚠️ 风险</h3>
+                <ul>
+                    ${data.cons.map(c => `<li>${c}</li>`).join('')}
+                </ul>
+                <h3>🎯 适用场景</h3>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                    ${data.scenes.map(s => `<span class="tag tag-primary">${s}</span>`).join('')}
+                </div>
+            `;
+
+            document.getElementById('detailContent').innerHTML = content;
+            document.getElementById('detailPanel').classList.add('open');
+            document.querySelector('.overlay').classList.add('open');
+        }
+
+        function closeDetail() {
+            document.getElementById('detailPanel').classList.remove('open');
+            document.querySelector('.overlay').classList.remove('open');
+        }
+
+        // 导航切换
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const target = document.getElementById(tab.dataset.tab);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // 四象限筛选
+        function filterByQuadrant(quadrant) {
+            const mapping = {
+                'tr': ['h', 'f', 'b'],
+                'tl': ['i', 'k'],
+                'br': ['j', 'a'],
+                'bl': ['c', 'd']
+            };
+            const schemes = mapping[quadrant] || [];
+
+            document.querySelectorAll('.scheme-row').forEach(row => {
+                if (schemes.includes(row.dataset.scheme)) {
+                    row.style.background = 'rgba(37, 99, 235, 0.2)';
+                } else {
+                    row.style.background = '';
+                }
+            });
+
+            setTimeout(() => {
+                document.querySelectorAll('.scheme-row').forEach(row => {
+                    row.style.background = '';
+                });
+            }, 2000);
+        }
+
+        // 决策树高亮
+        function highlightPath(path) {
+            document.querySelectorAll('.tree-node').forEach(node => {
+                node.style.transform = '';
+                node.style.boxShadow = '';
+            });
+            event.currentTarget.style.transform = 'scale(1.05)';
+            event.currentTarget.style.boxShadow = '0 10px 30px rgba(37, 99, 235, 0.5)';
+        }
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', initRadarChart);
+        window.addEventListener('resize', () => {
+            initRadarChart();
+        });
+    </script>
+</body>
+</html>
